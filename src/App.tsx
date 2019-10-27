@@ -1,20 +1,13 @@
 import React from 'react';
 import './App.css';
-import {
-  DiagramEngine,
-  DiagramModel,
-  DefaultNodeModel,
-  LinkModel,
-  DiagramWidget,
-  DefaultLinkModel
-} from "@projectstorm/react-diagrams";
-import "@projectstorm/react-diagrams/dist/style.min.css"
+import createEngine, { DefaultLinkModel, DiagramModel, DefaultNodeModel, DefaultNodeFactory } from '@projectstorm/react-diagrams';
+import { CanvasWidget, BaseEvent } from '@projectstorm/react-canvas-core';
 
 const App: React.FC = () => {
 
   //1) setup the diagram engine
-  var engine = new DiagramEngine();
-  engine.installDefaultFactories();
+  var engine = createEngine();
+  engine.getNodeFactories().registerFactory(new DefaultNodeFactory());
 
   //2) setup the diagram model
   var model = new DiagramModel();
@@ -40,10 +33,14 @@ const App: React.FC = () => {
   model.addAll(node1, node2, link1);
 
   //5) load model into engine
-  engine.setDiagramModel(model);
+  engine.setModel(model);
+
+  model.registerListener({
+    eventWillFire: (event: any) => console.log(event)
+  });
 
   //6) render the diagram!
-  return <DiagramWidget className="srd-demo-canvas" diagramEngine={engine} />;
+  return <CanvasWidget className="diagram-container" engine={engine} />;
 
 }
 
